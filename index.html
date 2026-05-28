@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>R9GPT</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Local AI Chat</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@400;600;700&display=swap" rel="stylesheet"/>
@@ -35,9 +35,9 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
-    height: 100dvh;
   }
 
+  /* Subtle grid background */
   body::before {
     content: '';
     position: fixed;
@@ -50,36 +50,37 @@
     z-index: 0;
   }
 
+  /* ── Header ── */
   #header {
     position: relative;
     z-index: 10;
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 16px;
+    padding: 14px 24px;
     border-bottom: 1px solid var(--border);
     background: rgba(10,10,12,0.9);
     backdrop-filter: blur(12px);
     flex-shrink: 0;
   }
   .logo-mark {
-    width: 28px; height: 28px;
+    width: 30px; height: 30px;
     border: 1.5px solid var(--accent);
-    border-radius: 6px;
+    border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
   }
-  .logo-mark svg { width: 14px; height: 14px; }
-  #header h1 { font-size: 14px; font-weight: 700; letter-spacing: -.3px; }
+  .logo-mark svg { width: 16px; height: 16px; }
+  #header h1 { font-size: 15px; font-weight: 700; letter-spacing: -.3px; }
   #header h1 span { color: var(--accent2); }
-  #header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  #header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
   #status-pill {
-    display: flex; align-items: center; gap: 5px;
-    padding: 3px 8px;
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
     border: 1px solid var(--border2);
     border-radius: 99px;
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
+    font-size: 11px;
     color: var(--muted);
     transition: all .3s;
   }
@@ -87,7 +88,7 @@
   #status-pill.ready   { border-color: var(--green); color: var(--green); }
   #status-pill.error   { border-color: var(--red);   color: var(--red);   }
   #status-dot {
-    width: 5px; height: 5px; border-radius: 50%;
+    width: 6px; height: 6px; border-radius: 50%;
     background: var(--muted);
     transition: background .3s;
   }
@@ -96,42 +97,40 @@
   #status-pill.error   #status-dot { background: var(--red); }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
+  /* ── Chat Screen ── */
   #chat-screen {
     position: relative; z-index: 5;
     flex: 1; display: flex; flex-direction: column; min-height: 0;
   }
   #messages {
-    flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px;
-    display: flex; flex-direction: column; gap: 12px;
+    flex: 1; overflow-y: auto; padding: 24px 20px;
+    display: flex; flex-direction: column; gap: 16px;
     scrollbar-width: thin; scrollbar-color: var(--border2) transparent;
   }
-  #messages::-webkit-scrollbar { width: 3px; }
+  #messages::-webkit-scrollbar { width: 4px; }
   #messages::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
 
-  .msg-wrap { 
-    display: flex; gap: 8px; width: 100%;
-    animation: fadeUp .2s ease;
-  }
-  .msg-wrap.user { justify-content: flex-end; flex-direction: row-reverse; }
-  .msg-wrap.ai   { justify-content: flex-start; }
-  .msg-wrap.system { justify-content: center; }
+  .msg-wrap { display: flex; gap: 10px; max-width: 780px; width: 100%; }
+  .msg-wrap.user { align-self: flex-end; flex-direction: row-reverse; }
+  .msg-wrap.ai   { align-self: flex-start; }
+  .msg-wrap.system { align-self: center; }
 
   .avatar {
-    width: 24px; height: 24px; border-radius: 6px;
+    width: 28px; height: 28px; border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; margin-top: 2px;
-    font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 500;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500;
   }
   .avatar.user-av { background: var(--user-bubble); border: 1px solid var(--user-border); color: var(--accent2); }
   .avatar.ai-av   { background: var(--ai-bubble);   border: 1px solid var(--border);     color: var(--accent); }
 
   .bubble {
-    padding: 10px 12px;
-    border-radius: 12px;
-    font-size: 13px;
-    line-height: 1.6;
+    padding: 11px 15px;
+    border-radius: 14px;
+    font-size: 14px;
+    line-height: 1.7;
     word-break: break-word;
-    max-width: min(85%, 500px);
+    max-width: calc(100% - 40px);
   }
   .bubble.user {
     background: var(--user-bubble);
@@ -145,61 +144,19 @@
     border-top-left-radius: 4px;
     color: var(--text);
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
+    font-size: 13px;
     white-space: pre-wrap;
-    overflow-x: auto;
-    padding: 0;
   }
   .bubble.system {
     background: transparent; border: none;
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px; color: var(--muted);
-    padding: 0;
+    font-size: 11px; color: var(--muted);
+    padding: 2px 0;
   }
 
-  .code-block {
-    background: #0f0f13;
-    border: 1px solid var(--border2);
-    border-radius: 8px;
-    padding: 12px;
-    margin: 8px 0;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    overflow-x: auto;
-    color: #c9d1d9;
-  }
-  .code-lang {
-    font-size: 9px;
-    color: var(--muted);
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: .05em;
-  }
-  .code-content {
-    overflow-x: auto;
-    line-height: 1.5;
-  }
-  .code-actions {
-    display: flex; gap: 6px; margin-top: 8px;
-    padding-top: 8px; border-top: 1px solid var(--border2);
-  }
-  .code-btn {
-    flex: 1; padding: 6px 10px;
-    background: var(--surface2); border: 1px solid var(--border2);
-    border-radius: 6px; font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px; color: var(--text); cursor: pointer;
-    transition: all .2s;
-  }
-  .code-btn:hover { background: var(--accent); border-color: var(--accent); }
-  .code-btn.run { background: var(--accent); border-color: var(--accent); }
-
-  .text-content {
-    padding: 10px 12px;
-  }
-
-  .typing-dots { display: flex; gap: 3px; align-items: center; padding: 2px 0; }
+  .typing-dots { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
   .typing-dots span {
-    width: 4px; height: 4px; border-radius: 50%;
+    width: 5px; height: 5px; border-radius: 50%;
     background: var(--muted);
     animation: tdot 1.1s infinite;
   }
@@ -207,36 +164,36 @@
   .typing-dots span:nth-child(3) { animation-delay: .36s; }
   @keyframes tdot { 0%,80%,100%{transform:translateY(0);opacity:.4} 40%{transform:translateY(-5px);opacity:1} }
 
+  /* ── Input Bar ── */
   #input-bar {
     flex-shrink: 0;
-    padding: 8px 12px 12px;
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    padding: 12px 20px 16px;
     border-top: 1px solid var(--border);
     background: rgba(10,10,12,0.95);
     backdrop-filter: blur(12px);
     position: relative; z-index: 10;
   }
   #input-inner {
-    display: flex; gap: 6px; align-items: flex-end;
+    display: flex; gap: 8px; align-items: flex-end;
     background: var(--surface);
     border: 1px solid var(--border2);
-    border-radius: 12px;
-    padding: 6px 6px 6px 12px;
+    border-radius: 14px;
+    padding: 8px 8px 8px 14px;
     transition: border-color .2s;
   }
   #input-inner:focus-within { border-color: var(--accent); }
   #user-input {
     flex: 1; background: transparent; border: none; outline: none;
     color: var(--text); font-family: 'Syne', sans-serif;
-    font-size: 13px; line-height: 1.5;
-    resize: none; max-height: 100px; overflow-y: auto;
+    font-size: 14px; line-height: 1.6;
+    resize: none; max-height: 140px; overflow-y: auto;
     padding: 4px 0;
     scrollbar-width: none;
   }
   #user-input::placeholder { color: var(--muted); }
   #user-input::-webkit-scrollbar { display: none; }
   #send-btn {
-    width: 32px; height: 32px; border-radius: 8px;
+    width: 36px; height: 36px; border-radius: 9px;
     background: var(--accent); border: none; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; transition: background .2s, transform .1s;
@@ -244,8 +201,14 @@
   #send-btn:hover:not(:disabled) { background: var(--accent2); transform: scale(1.05); }
   #send-btn:active:not(:disabled) { transform: scale(.97); }
   #send-btn:disabled { background: var(--surface2); cursor: not-allowed; }
-  #send-btn svg { width: 14px; height: 14px; }
+  #send-btn svg { width: 16px; height: 16px; }
+  #hint {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--muted);
+    text-align: center; margin-top: 8px;
+  }
 
+  /* ── Initialization Overlay ── */
   #init-overlay {
     position: fixed;
     inset: 0;
@@ -265,9 +228,9 @@
   }
 
   .circular-progress {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 24px;
     position: relative;
     display: flex;
     align-items: center;
@@ -291,100 +254,38 @@
     stroke: url(#grad);
     stroke-width: 3;
     stroke-linecap: round;
+    transition: stroke-dashoffset 0.3s ease;
     stroke-dasharray: 282.6;
     stroke-dashoffset: 282.6;
-    transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .progress-text {
     position: absolute;
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 600;
     color: var(--accent);
   }
 
-  #code-canvas {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.8);
-    display: none;
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
+  .init-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 16px;
+    letter-spacing: .05em;
+    text-transform: uppercase;
   }
-  #code-canvas.open { display: flex; }
-  
-  .canvas-content {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    max-width: 90vw;
-    max-height: 90vh;
-    overflow: auto;
-    position: relative;
-  }
-  .canvas-close {
-    position: absolute; top: 12px; right: 12px;
-    width: 28px; height: 28px; border-radius: 6px;
-    background: var(--surface2); border: 1px solid var(--border2);
-    color: var(--text); cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .canvas-close:hover { background: var(--accent); }
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-
-  @media (max-width: 640px) {
-    #header {
-      padding: 10px 12px;
-    }
-    .logo-mark {
-      width: 26px; height: 26px;
-    }
-    #header h1 {
-      font-size: 13px;
-    }
-    #messages {
-      padding: 12px;
-      gap: 10px;
-    }
-    .bubble {
-      font-size: 12px;
-      padding: 9px 11px;
-      border-radius: 10px;
-    }
-    .bubble.ai {
-      font-size: 11px;
-    }
-    .avatar {
-      width: 22px; height: 22px;
-    }
-    #input-bar {
-      padding: 6px 10px 10px;
-    }
-    #input-inner {
-      padding: 5px 5px 5px 10px;
-    }
-    #send-btn {
-      width: 30px; height: 30px;
-    }
-    .circular-progress {
-      width: 80px;
-      height: 80px;
-    }
-    .progress-text {
-      font-size: 16px;
-    }
-  }
+  .msg-wrap { animation: fadeUp .2s ease; }
 </style>
 </head>
 <body>
 
+<!-- Header -->
 <div id="header">
   <div class="logo-mark">
     <svg viewBox="0 0 16 16" fill="none" stroke="#7c6dfa" stroke-width="1.5" stroke-linecap="round">
@@ -392,7 +293,7 @@
       <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.2 3.2l1.4 1.4M11.4 11.4l1.4 1.4M3.2 12.8l1.4-1.4M11.4 4.6l1.4-1.4"/>
     </svg>
   </div>
-  <h1>R9<span>GPT</span></h1>
+  <h1>Local<span>AI</span></h1>
   <div id="header-right">
     <div id="status-pill">
       <div id="status-dot"></div>
@@ -401,6 +302,7 @@
   </div>
 </div>
 
+<!-- Initialization Overlay -->
 <div id="init-overlay">
   <div class="init-container">
     <div class="circular-progress">
@@ -416,14 +318,16 @@
       </svg>
       <span class="progress-text" id="progress-percent">0%</span>
     </div>
+    <div class="init-label" id="init-status">Starting AI…</div>
   </div>
 </div>
 
+<!-- Chat Screen -->
 <div id="chat-screen">
   <div id="messages"></div>
   <div id="input-bar">
     <div id="input-inner">
-      <textarea id="user-input" rows="1" placeholder="Message…"></textarea>
+      <textarea id="user-input" rows="1" placeholder="Message the AI…"></textarea>
       <button id="send-btn" disabled>
         <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"/>
@@ -431,13 +335,7 @@
         </svg>
       </button>
     </div>
-  </div>
-</div>
-
-<div id="code-canvas">
-  <div class="canvas-content">
-    <button class="canvas-close">✕</button>
-    <div id="canvas-output"></div>
+    <div id="hint">Enter to send · Shift+Enter for new line</div>
   </div>
 </div>
 
@@ -454,106 +352,15 @@ const userInput   = $('user-input');
 const sendBtn     = $('send-btn');
 const initOverlay = $('init-overlay');
 const progressPercent = $('progress-percent');
-const codeCanvas = $('code-canvas');
-const canvasClose = $('.canvas-close');
-const canvasOutput = $('canvas-output');
+const initStatus = $('init-status');
 
 let engine = null;
 let history = [];
 let busy = false;
-let lastProgress = 0;
 
 function setStatus(state, label) {
   statusPill.className = state;
   statusLabel.textContent = label;
-}
-
-function parseAIResponse(text) {
-  const blocks = [];
-  let lastIndex = 0;
-  const codeRegex = /```(\w*)\n([\s\S]*?)```/g;
-  let match;
-
-  while ((match = codeRegex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      blocks.push({ type: 'text', content: text.slice(lastIndex, match.index) });
-    }
-    blocks.push({ type: 'code', lang: match[1] || 'javascript', content: match[2].trim() });
-    lastIndex = match.index + match[0].length;
-  }
-
-  if (lastIndex < text.length) {
-    blocks.push({ type: 'text', content: text.slice(lastIndex) });
-  }
-
-  return blocks.length ? blocks : [{ type: 'text', content: text }];
-}
-
-function createCodeBlock(lang, code) {
-  const container = document.createElement('div');
-  container.className = 'code-block';
-  
-  const langLabel = document.createElement('div');
-  langLabel.className = 'code-lang';
-  langLabel.textContent = lang || 'code';
-  
-  const codeContent = document.createElement('pre');
-  codeContent.className = 'code-content';
-  codeContent.textContent = code;
-  
-  const actions = document.createElement('div');
-  actions.className = 'code-actions';
-  
-  const copyBtn = document.createElement('button');
-  copyBtn.className = 'code-btn';
-  copyBtn.textContent = 'Copy';
-  copyBtn.onclick = () => {
-    navigator.clipboard.writeText(code);
-    copyBtn.textContent = 'Copied!';
-    setTimeout(() => copyBtn.textContent = 'Copy', 1500);
-  };
-  
-  const runBtn = document.createElement('button');
-  runBtn.className = 'code-btn run';
-  runBtn.textContent = 'Run';
-  runBtn.onclick = () => runCode(code, lang);
-  
-  actions.appendChild(copyBtn);
-  if (lang === 'javascript' || lang === 'js') {
-    actions.appendChild(runBtn);
-  }
-  
-  container.appendChild(langLabel);
-  container.appendChild(codeContent);
-  container.appendChild(actions);
-  return container;
-}
-
-function runCode(code, lang) {
-  if (lang !== 'javascript' && lang !== 'js') {
-    alert('Only JavaScript can be run');
-    return;
-  }
-
-  canvasOutput.innerHTML = '';
-  codeCanvas.classList.add('open');
-
-  const canvas = document.createElement('canvas');
-  canvas.width = 500;
-  canvas.height = 500;
-  canvas.style.border = '1px solid var(--border)';
-  canvas.style.borderRadius = '8px';
-  canvas.style.display = 'block';
-  canvas.style.margin = '0 auto';
-  canvasOutput.appendChild(canvas);
-
-  try {
-    const ctx = canvas.getContext('2d');
-    const createFunction = new Function('canvas', 'ctx', code);
-    createFunction(canvas, ctx);
-  } catch (e) {
-    canvasOutput.innerHTML = `<div style="color: var(--red); font-family: monospace; font-size: 12px;">Error: ${e.message}</div>`;
-  }
 }
 
 function addMsg(role, content) {
@@ -572,26 +379,13 @@ function addMsg(role, content) {
 
   const av = document.createElement('div');
   av.className = 'avatar ' + (role === 'user' ? 'user-av' : 'ai-av');
-  av.textContent = role === 'user' ? 'U' : 'R9';
+  av.textContent = role === 'user' ? 'YOU' : 'AI';
 
   const b = document.createElement('div');
   b.className = 'bubble ' + role;
 
   if (content === '__typing__') {
     b.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
-  } else if (role === 'ai') {
-    b.innerHTML = '';
-    const blocks = parseAIResponse(content);
-    for (const block of blocks) {
-      if (block.type === 'code') {
-        b.appendChild(createCodeBlock(block.lang, block.content));
-      } else if (block.content.trim()) {
-        const textDiv = document.createElement('div');
-        textDiv.className = 'text-content';
-        textDiv.textContent = block.content;
-        b.appendChild(textDiv);
-      }
-    }
   } else {
     b.textContent = content;
   }
@@ -606,26 +400,22 @@ function addMsg(role, content) {
 async function initializeModel() {
   const modelId = 'Qwen2.5-0.5B-Instruct-q4f16_1-MLC';
   setStatus('loading', 'loading…');
-  lastProgress = 0;
 
   try {
     engine = await CreateMLCEngine(modelId, {
       initProgressCallback: info => {
         const pct = Math.round((info.progress || 0) * 100);
+        progressPercent.textContent = pct + '%';
+        initStatus.textContent = info.text || 'Starting AI…';
         
-        if (pct > lastProgress) {
-          lastProgress = pct;
-          progressPercent.textContent = pct + '%';
-          
-          const circumference = 282.6;
-          const offset = circumference - (pct / 100) * circumference;
-          const fillCircle = document.querySelector('.circular-progress-fill');
-          if (fillCircle) {
-            fillCircle.style.strokeDashoffset = offset;
-          }
-          
-          statusLabel.textContent = pct + '%';
+        const circumference = 282.6;
+        const offset = circumference - (pct / 100) * circumference;
+        const fillCircle = document.querySelector('.circular-progress-fill');
+        if (fillCircle) {
+          fillCircle.style.strokeDashoffset = offset;
         }
+        
+        statusLabel.textContent = pct + '%';
       }
     });
 
@@ -633,10 +423,11 @@ async function initializeModel() {
     setStatus('ready', 'ready');
     sendBtn.disabled = false;
 
-    addMsg('system', '— R9GPT ready · made by Arnav Jain · running locally · completely private —');
+    addMsg('system', '— AI ready · running locally · completely private —');
     userInput.focus();
   } catch (e) {
     setStatus('error', 'error');
+    initStatus.textContent = '✗ ' + (e.message || String(e));
   }
 }
 
@@ -657,33 +448,17 @@ async function send() {
   let reply = '';
   try {
     const stream = await engine.chat.completions.create({
-      messages: [
-        { role: 'system', content: 'You are R9GPT, an AI assistant made by Arnav Jain. You are helpful, creative, and highly capable. When providing code, wrap it in triple backticks with the language name (e.g., ```javascript).' },
-        ...history
-      ],
+      messages: history,
       stream: true,
       temperature: 0.7,
-      max_tokens: 1024
+      max_tokens: 512
     });
 
     aiBubble.innerHTML = '';
     for await (const chunk of stream) {
       const delta = chunk.choices[0]?.delta?.content || '';
       reply += delta;
-      
-      const blocks = parseAIResponse(reply);
-      aiBubble.innerHTML = '';
-      for (const block of blocks) {
-        if (block.type === 'code') {
-          aiBubble.appendChild(createCodeBlock(block.lang, block.content));
-        } else if (block.content.trim()) {
-          const textDiv = document.createElement('div');
-          textDiv.className = 'text-content';
-          textDiv.textContent = block.content;
-          aiBubble.appendChild(textDiv);
-        }
-      }
-      
+      aiBubble.textContent = reply;
       messages.scrollTop = messages.scrollHeight;
     }
   } catch (e) {
@@ -697,16 +472,6 @@ async function send() {
   userInput.focus();
 }
 
-canvasClose.addEventListener('click', () => {
-  codeCanvas.classList.remove('open');
-});
-
-codeCanvas.addEventListener('click', (e) => {
-  if (e.target === codeCanvas) {
-    codeCanvas.classList.remove('open');
-  }
-});
-
 sendBtn.addEventListener('click', send);
 
 userInput.addEventListener('keydown', e => {
@@ -715,9 +480,10 @@ userInput.addEventListener('keydown', e => {
 
 userInput.addEventListener('input', () => {
   userInput.style.height = 'auto';
-  userInput.style.height = Math.min(userInput.scrollHeight, 100) + 'px';
+  userInput.style.height = Math.min(userInput.scrollHeight, 140) + 'px';
 });
 
+// Auto-initialize on page load
 window.addEventListener('load', initializeModel);
 </script>
 </body>
